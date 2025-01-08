@@ -1,0 +1,10 @@
+<div th:fragment="nav" xmlns:th="http://www.thymeleaf.org">
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #e3f2fd;">
+        <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1">Expense Tracker</span>
+            <div id="logout-btn" class="position-absolute top-50 end-0 translate-middle-y" th:replace="~{fragments/logout :: logout}"></div>
+            <script type="module" th:src="@{/js/nav.js}" defer></script>
+        </div>
+        <div th:replace="~{fragments/toast-container :: toast-container}"></div>
+    </nav>
+</div>

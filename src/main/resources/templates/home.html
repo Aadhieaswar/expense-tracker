@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Home</title>
+    <div th:replace="~{fragments/header :: header}"></div>
+    <script type="module" th:src="@{/js/home.js}" defer></script>
+</head>
+<body>
+    <div th:replace="~{fragments/nav :: nav}"></div>
+    <div id="not-authenticated-user">
+        <div th:replace="~{fragments/home-content :: home-content('Home')}"></div>
+    </div>
+    <div id="authenticated-user">
+        <div class="card user-expenses-card">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="expenses-list-btn" href="#">Expenses</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="add-expense-form-btn" href="#">Add Expense</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div id="add-expense-form-container">
+                    <div th:replace="~{fragments/expense-form :: expense-form}"></div>
+                </div>
+
+                <table class="table table-striped table-hover" id="expenses-table">
+                    <select class="form-select" id="month-year-select">
+                    </select>
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Item</th>
+                            <th scope="col">Description</th>
+                            <th scope="col">Category</th>
+                            <th scope="col">Expended</th>
+                            <th scope="col">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="user-expenses">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

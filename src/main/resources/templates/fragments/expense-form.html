@@ -1,0 +1,26 @@
+<div th:fragment="expense-form" xmlns:th="http://www.thymeleaf.org">
+    <form id="expense-form" class="card">
+        <div class="card-body">
+            <div class="card-title">
+                Add New Expense
+            </div>
+            <div class="mb-3">
+                <label for="item-name" class="form-label">Item</label>
+                <input type="text" id="item-name" name="item" class="form-control" required/>
+            </div>
+            <div class="mb-3">
+                <label for="item-description" class="form-label">Description</label>
+                <input type="text" id="item-description" name="description" class="form-control" required/>
+            </div>
+            <select class="form-select" id="category-select" name="categoryId">
+                <option value="0" selected>Select Category</option>
+            </select>
+            <div class="mb-3">
+                <label for="item-price" class="form-label">Price</label>
+                <input type="number" id="item-price" name="price" class="form-control" required/>
+            </div>
+            <button class="btn btn-primary" id="add-expense-btn">Add</button>
+        </div>
+    </form>
+    <script type="module" th:src="@{/js/add-expense.js}" defer></script>
+</div>

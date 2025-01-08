@@ -1,0 +1,11 @@
+<div class="logout-container" th:fragment="logout" xmlns:th="http://www.thymeleaf.org">
+    <button class="btn btn-info" id="logout-btn">
+        Logout
+    </button>
+    <script defer>
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            localStorage.clear('token');
+            window.location.href = '/';
+        });
+    </script>
+</div>

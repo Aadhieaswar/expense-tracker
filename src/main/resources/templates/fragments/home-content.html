@@ -1,0 +1,39 @@
+<div th:fragment="home-content(page)" xmlns:th="http://www.thymeleaf.org">
+    <div class="container">
+        <section class="hero">
+            <blockquote class="blockquote mb-0"><strong>"Take control of your finances, track your expenses, and plan for a better tomorrow."</strong></blockquote>
+            <section class="cta">
+                <h2 th:if="${page == 'Home'}">Ready to get started?</h2>
+                <a class="btn btn-primary" th:if="${page != 'Signup'}" href="/signup">Sign Up Now</a>
+                <a class="btn btn-primary" th:if="${page != 'Login'}" href="/login">Log In</a>
+            </section>
+        </section>
+
+        <section class="features">
+            <div class="card feature border-info bg-light">
+                <div class="card-body">
+                    <h2 class="card-title">Real-Time Expense Tracking</h2>
+                    <p>Keep an eye on where your money goes and stay on top of your spending.</p>
+                </div>
+            </div>
+            <div class="card feature border-warning bg-light">
+                <div class="card-body">
+                    <h2 class="card-title">Budget Planning</h2>
+                    <p>Set budgets and get insights on how to stick to them effectively.</p>
+                </div>
+            </div>
+            <div class="card feature border-primary bg-light">
+                <div class="card-body">
+                    <h2 class="card-title">Visual Insights</h2>
+                    <p>Use intuitive charts and graphs to analyze your financial health.</p>
+                </div>
+            </div>
+            <div class="card feature border-danger bg-light">
+                <div class="card-body">
+                    <h2 class="card-title">Secure and Reliable</h2>
+                    <p>Your data is safe with us, thanks to robust encryption and user-focused security measures.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
