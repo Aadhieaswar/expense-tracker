@@ -1,11 +1,13 @@
 package com.aadhie.expensetracker.services;
 
+import com.aadhie.expensetracker.dto.ExpensesCategorySummaryDTO;
 import com.aadhie.expensetracker.models.Category;
 import com.aadhie.expensetracker.models.ExpenseItem;
 import com.aadhie.expensetracker.repositories.CategoriesRepository;
 import com.aadhie.expensetracker.repositories.ExpensesRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -55,6 +57,16 @@ public class ExpensesService {
                 (Double) record[3],
                 (Category) record[4],
                 (Date) record[5]
+        )).collect(Collectors.toList());
+    }
+
+    public List<ExpensesCategorySummaryDTO> getExpensesSummaryForUserByCategory(String userId, int month, int year) {
+        List<Object[]> expensesCategorySummary = expensesRepository.getUserExpensesSummaryByCategory(userId, month, year);
+        return expensesCategorySummary.stream().map(record -> new ExpensesCategorySummaryDTO(
+                (Category) record[0],
+                (Long) record[1],
+                (Double) record[2],
+                (Double) record[3]
         )).collect(Collectors.toList());
     }
 }

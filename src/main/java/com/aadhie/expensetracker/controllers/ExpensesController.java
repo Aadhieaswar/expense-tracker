@@ -1,6 +1,7 @@
 package com.aadhie.expensetracker.controllers;
 
 import com.aadhie.expensetracker.dto.ExpenseItemDTO;
+import com.aadhie.expensetracker.dto.ExpensesCategorySummaryDTO;
 import com.aadhie.expensetracker.models.Category;
 import com.aadhie.expensetracker.models.ExpenseItem;
 import com.aadhie.expensetracker.services.CategoryService;
@@ -89,6 +90,17 @@ public class ExpensesController {
 
         try {
             return expensesService.getSummaryForUserByMonthAndYear(uid, month, year);
+        } catch (Exception ex) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/expenses/category/summary/{month}/{year}")
+    public List<ExpensesCategorySummaryDTO> getExpensesCategoryStatsByYearAndMonth(HttpServletRequest request, @PathVariable("month") int month, @PathVariable("year") int year) {
+        String uid = (String) request.getAttribute("uid");
+
+        try {
+            return expensesService.getExpensesSummaryForUserByCategory(uid, month, year);
         } catch (Exception ex) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }

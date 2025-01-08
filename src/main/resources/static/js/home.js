@@ -9,8 +9,12 @@ window.addEventListener('DOMContentLoaded', () => {
     const expensesFormTab = document.getElementById('add-expense-form-btn');
 
     // tab components
-    const expensesListTable = document.getElementById('expenses-table');
+    const expensesListTable = document.getElementById('expenses-tables-container');
     const addExpenseForm = document.getElementById('add-expense-form-container');
+
+    // table components
+    const expensesSummaryTable = document.getElementById('user-expenses-summary');
+    const expensesCategorySummaryTable = document.getElementById('user-category-expenses-summary');
 
     noAuthUser.style.display = "none";
     authUser.style.display = "none";
@@ -35,8 +39,12 @@ window.addEventListener('DOMContentLoaded', () => {
                 tab: expensesListTab,
                 ele: expensesListTable,
                 callback: () => {
+                    // reset the month dropdown
+                    const date = new Date();
+                    yearMonthSelect.value = `${date.getMonth() + 1}-${date.getFullYear()}`
+
                     // reload expenses data from backend
-                    getUserExpenses(expensesComponent, token);
+                    getUserExpenses(expensesComponent, expensesSummaryTable, expensesCategorySummaryTable, token);
                 }
             },
             'addExpenseForm': {
@@ -45,7 +53,7 @@ window.addEventListener('DOMContentLoaded', () => {
             },
         }
 
-        getUserExpenses(expensesComponent, token);
+        getUserExpenses(expensesComponent, expensesSummaryTable,expensesCategorySummaryTable, token);
 
         (async function() {
             fetch('/api/categories', {
@@ -74,15 +82,16 @@ window.addEventListener('DOMContentLoaded', () => {
                 }
             })
                 .then((res) => {
-                    const date = new Date();
-                    yearMonthSelect.innerHTML += `<option value="${date.getMonth() + 1}-${date.getFullYear()}">${date.toLocaleString('default', { month: 'short' })}, ${date.getFullYear()} - CURRENT</option>`;
-
                     if (res.ok) {
                         return res.json();
                     }
                 })
                 .then((data) => {
-                    data.map((row) => {
+                    const date = new Date();
+                    data.map((row, idx) => {
+                        if (idx === 0 && data[0][1] !== (date.getMonth() + 1) && data[0][0] !== date.getFullYear()) {
+                            yearMonthSelect.innerHTML += `<option value="${date.getMonth() + 1}-${date.getFullYear()}">${date.toLocaleString('default', { month: 'short' })}, ${date.getFullYear()}</option>`;
+                        }
                         const monthString = new Intl.DateTimeFormat('en-US', { month: 'short' }).format(new Date(0, row[1] - 1));
                         yearMonthSelect.innerHTML += `<option value="${row[1]}-${row[0]}">${monthString}, ${row[0]}</option>`;
                     });
@@ -91,7 +100,8 @@ window.addEventListener('DOMContentLoaded', () => {
         })();
 
         yearMonthSelect.addEventListener('change', () => {
-            getUserExpenses(expensesComponent, token, yearMonthSelect.value.split('-')[0], yearMonthSelect.value.split('-')[1]);
+            const [month, year] = [yearMonthSelect.value.split('-')[0], yearMonthSelect.value.split('-')[1]];
+            getUserExpenses(expensesComponent, expensesSummaryTable, expensesCategorySummaryTable, token, month, year);
         });
 
     }
@@ -112,7 +122,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-async function getUserExpenses(component, token, month=null, year=null) {
+async function getUserExpenses(component, summaryComponent, categorySummaryComponent, token, month=null, year=null) {
     const expenseRowComponent = (idx, item, desc, category, expense, date) =>  
         (`<tr>
             <th scope="row">${idx + 1}</th>
@@ -139,9 +149,20 @@ async function getUserExpenses(component, token, month=null, year=null) {
             data.map((exp, idx) => {
                 component.innerHTML += expenseRowComponent(idx, exp.item, exp.description, exp.category, exp.price, exp.date);
             });
+
+            if (data.length >= 1) {
+                summaryComponent.parentElement.style.display = "block";
+                getUserExpensesSummary(summaryComponent, token, month, year);
+
+                categorySummaryComponent.parentElement.style.display = "block";
+                getUserExpensesCategorySummary(categorySummaryComponent, token, month, year);
+            } else {
+                summaryComponent.parentElement.style.display = "none";
+                categorySummaryComponent.parentElement.style.display = "none";
+            }
         }
     })
-    .catch(err => window.addAlert(err));
+    .catch(err => window.addAlert(err, 'danger'));
 };
 
 async function getUserExpensesSummary(component, token, month=null, year=null) {
@@ -163,8 +184,38 @@ async function getUserExpensesSummary(component, token, month=null, year=null) {
     .then((res) => res.json())
     .then((data) => {
         if (data) {
-            component.innerHTML = summaryRow(data[0], data[1]);
+            component.innerHTML = summaryRow(data[0][0], data[0][1]);
         }
     })
-    .catch(err => window.addAlert(err));
+    .catch(err => window.addAlert(err, 'danger'));
+};
+
+async function getUserExpensesCategorySummary(component, token, month=null, year=null) {
+    const categorySummaryRow = (category, count, total, average) =>  
+        (`<tr>
+            <td>${category.name}</td>
+            <td>${count}</td>
+            <td>$${total}</td>
+            <td>$${average}</td>
+        </tr>
+        `);
+
+    const date = new Date();
+    fetch(`/api/expenses/category/summary/${month ?? date.getMonth() + 1}/${year ?? date.getFullYear()}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': token,
+            'Content-Type': 'application/json'
+        }
+    })
+    .then((res) => res.json())
+    .then((data) => {
+        if (data) {
+            component.innerHTML = "";
+            data.map((item) => {
+                component.innerHTML += categorySummaryRow(item.category, item.count, item.total, item.average);
+            });
+        }
+    })
+    .catch(err => window.addAlert(err, 'danger'));
 };
